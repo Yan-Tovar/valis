@@ -1,4 +1,6 @@
-from core.components.alerts.snackbar import Snackbar
+from ..components.chat_results_list import (
+    build as build_results
+)
 
 
 class EstudioSearchHandler:
@@ -8,39 +10,20 @@ class EstudioSearchHandler:
         page,
         controller,
         state,
-        ui,
-        on_select
+        ui
     ):
 
         self.page = page
         self.controller = controller
         self.state = state
         self.ui = ui
-        self.on_select = on_select
 
-    def handle(self, _e):
+    def handle(self, e):
 
-        if not self.state.entidad_selected:
+        query = e.control.value.strip()
 
-            Snackbar.error(
-                self.page,
-                "Selecciona una entidad primero"
-            )
-
+        if not query:
             return
-
-        query = self.ui["search_estudio_input"].value.strip()
-
-        self.state.estudio_query = query
-        self.state.estudio_selected = None
-        self.state.estudio_selected_index = 0
-        self.state.estudio_results_visible = True
-
-        # -------------------------------------------------
-        # BUSCAR ESTUDIOS FILTRADOS POR ENTIDAD
-        # -------------------------------------------------
-        # Incluso sin query, llamamos al método para obtener
-        # todos los estudios disponibles para esta entidad
 
         response = (
             self.controller.search_estudios_por_entidad(
@@ -51,36 +34,21 @@ class EstudioSearchHandler:
 
         if not response.success:
 
-            Snackbar.error(
-                self.page,
-                response.message
-            )
+            self.ui["results_container"].controls = []
 
-            self.state.estudio_results = []
-
-            self._render_results()
+            self.page.update()
 
             return
 
-        self.state.estudios_disponibles = response.data
         self.state.estudio_results = response.data
-        self.state.estudio_selected_index = 0
 
-        self._render_results()
+        self.ui["results_container"].controls = [
 
-    def _render_results(self):
-
-        from ..components.search_results_list import (
-            build as build_search_results
-        )
-
-        self.ui["estudio_results_container"].controls = (
-            build_search_results(
-                "Estudios disponibles",
+            build_results(
                 self.state.estudio_results,
                 self.state.estudio_selected_index,
-                self.on_select
+                self.ui["on_estudio_select"]
             )
-        )
+        ]
 
         self.page.update()

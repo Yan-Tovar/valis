@@ -1,30 +1,36 @@
-from core.components.alerts.snackbar import Snackbar
+from ..components.chat_results_list import (
+    build as build_results
+)
 
 
 class EntidadSearchHandler:
 
-    def __init__(self, page, controller, state, ui, on_select):
+    def __init__(
+        self,
+        page,
+        controller,
+        state,
+        ui
+    ):
 
         self.page = page
         self.controller = controller
         self.state = state
         self.ui = ui
-        self.on_select = on_select
 
-    def handle(self, _e):
+    def handle(self, e):
 
-        query = self.ui["search_entidad_input"].value.strip()
+        query = e.control.value.strip()
 
         self.state.entidad_query = query
-        self.state.entidad_selected = None
-        self.state.entidad_selected_index = 0
-        self.state.entidad_results_visible = True
 
-        # -------------------------------------------------
-        # BUSCAR ENTIDADES
-        # -------------------------------------------------
-        # Buscar incluso si query está vacío para mostrar
-        # todas las entidades disponibles
+        if not query:
+
+            self.ui["results_container"].controls = []
+
+            self.page.update()
+
+            return
 
         response = self.controller.search_entidad(
             query
@@ -32,36 +38,21 @@ class EntidadSearchHandler:
 
         if not response.success:
 
-            Snackbar.error(
-                self.page,
-                response.message
-            )
+            self.ui["results_container"].controls = []
 
-            self.state.entidad_results = []
-
-            self._render_results()
+            self.page.update()
 
             return
 
-        self.state.entidades_disponibles = response.data
         self.state.entidad_results = response.data
-        self.state.entidad_selected_index = 0
 
-        self._render_results()
+        self.ui["results_container"].controls = [
 
-    def _render_results(self):
-
-        from ..components.search_results_list import (
-            build as build_search_results
-        )
-
-        self.ui["entidad_results_container"].controls = (
-            build_search_results(
-                "Entidades disponibles",
+            build_results(
                 self.state.entidad_results,
                 self.state.entidad_selected_index,
-                self.on_select
+                self.ui["on_entidad_select"]
             )
-        )
+        ]
 
         self.page.update()

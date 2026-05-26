@@ -1,34 +1,21 @@
 import flet as ft
 
 from .consulta_controller import ConsultaController
-from .state.consulta_state import ConsultaState
 
-from .components.consulta_left_panel import (
-    ConsultaLeftPanel
+from .state.consulta_state import (
+    ConsultaState
 )
 
-from .components.consulta_right_panel import (
-    ConsultaRightPanel
+from .components.chat_bubble_ai import (
+    build as build_ai
 )
 
-from .builders.left_panel_builder import (
-    build as build_left_panel
+from .components.chat_input import (
+    build as build_chat_input
 )
 
-from .builders.right_panel_builder import (
-    build as build_right_panel
-)
-
-from .builders.consulta_layout_builder import (
-    build as build_consulta_layout
-)
-
-from .handlers.estudio_search_handler import (
-    EstudioSearchHandler
-)
-
-from .handlers.estudio_selection_handler import (
-    EstudioSelectionHandler
+from .components.detail_modal import (
+    show_detail_modal
 )
 
 from .handlers.entidad_search_handler import (
@@ -37,6 +24,14 @@ from .handlers.entidad_search_handler import (
 
 from .handlers.entidad_selection_handler import (
     EntidadSelectionHandler
+)
+
+from .handlers.estudio_search_handler import (
+    EstudioSearchHandler
+)
+
+from .handlers.estudio_selection_handler import (
+    EstudioSelectionHandler
 )
 
 from .handlers.search_navigation_handler import (
@@ -56,287 +51,229 @@ class ConsultaView:
 
         self.state = ConsultaState()
 
-        # =================================================
-        # PANELS
-        # =================================================
+        # =====================================================
+        # CHAT
+        # =====================================================
 
-        self.left_panel = ConsultaLeftPanel(
-
-            on_search_estudio=self._on_search_estudio,
-
-            on_estudio_selected=self._on_estudio_selected,
-
-            on_search_entidad=self._on_search_entidad,
-
-            on_entidad_selected=self._on_entidad_selected
+        self.chat = ft.Column(
+            spacing=15,
+            scroll=ft.ScrollMode.AUTO,
+            expand=True
         )
 
-        self.right_panel = ConsultaRightPanel()
+        # =====================================================
+        # INPUTS
+        # =====================================================
 
-        # =================================================
-        # FLUJO INICIAL
-        # =================================================
+        self.entidad_input = build_chat_input(
 
-        # PASO 1: Buscar entidad primero (visible)
-        # PASO 2: Buscar estudio luego (oculto hasta seleccionar entidad)
+            "Buscar entidad...",
 
-        self.left_panel.search_entidad_input.visible = True
-        self.left_panel.search_estudio_input.visible = False
+            self._on_search_entidad,
 
-        # =================================================
-        # UI REFERENCES
-        # =================================================
+            visible=True,
+
+            autofocus=True
+        )
+
+        self.estudio_input = build_chat_input(
+
+            "Buscar estudio...",
+
+            self._on_search_estudio,
+
+            visible=False
+        )
+
+        # =====================================================
+        # RESULTS
+        # =====================================================
+
+        self.results_container = ft.Column()
+
+        # =====================================================
+        # UI
+        # =====================================================
 
         self.ui = {
 
-            "search_estudio_input":
-            self.left_panel.search_estudio_input,
+            "chat": self.chat,
 
-            "search_entidad_input":
-            self.left_panel.search_entidad_input,
+            "entidad_input": self.entidad_input,
 
-            "estudio_results_container":
-            self.left_panel.estudio_results_container,
+            "estudio_input": self.estudio_input,
 
-            "entidad_results_container":
-            self.left_panel.entidad_results_container,
+            "results_container": self.results_container,
 
-            "resultado_container":
-            self.right_panel.resultado_container
+            "on_entidad_select": self._on_entidad_selected,
+
+            "on_estudio_select": self._on_estudio_selected,
+
+            "on_finish": self._restart_flow,
+
+            "on_open_detail": self._open_detail
         }
 
-        # =================================================
+        # =====================================================
         # HANDLERS
-        # =================================================
-
-        self.estudio_search_handler = (
-            EstudioSearchHandler(
-
-                self.page,
-
-                self.controller,
-
-                self.state,
-
-                self.ui,
-
-                self._on_estudio_selected
-            )
-        )
-
-        self.estudio_selection_handler = (
-            EstudioSelectionHandler(
-
-                self.page,
-
-                self.controller,
-
-                self.state,
-
-                self.ui
-            )
-        )
+        # =====================================================
 
         self.entidad_search_handler = (
             EntidadSearchHandler(
-
-                self.page,
-
+                page,
                 self.controller,
-
                 self.state,
-
-                self.ui,
-
-                self._on_entidad_selected
+                self.ui
             )
         )
 
         self.entidad_selection_handler = (
             EntidadSelectionHandler(
-
-                self.page,
-
+                page,
                 self.controller,
-
                 self.state,
+                self.ui
+            )
+        )
 
-                self.ui,
+        self.estudio_search_handler = (
+            EstudioSearchHandler(
+                page,
+                self.controller,
+                self.state,
+                self.ui
+            )
+        )
 
-                self._on_estudio_selected
+        self.estudio_selection_handler = (
+            EstudioSelectionHandler(
+                page,
+                self.controller,
+                self.state,
+                self.ui
             )
         )
 
         self.search_navigation_handler = (
             SearchNavigationHandler(
-
-                self.page,
-
+                page,
                 self.state,
-
                 self.ui
             )
         )
 
-        # =================================================
-        # KEYBOARD EVENTS
-        # =================================================
+        # =====================================================
+        # INIT
+        # =====================================================
 
-        self.page.on_keyboard_event = (
-            self._on_keyboard_event
+        self._start_chat()
+
+    # =====================================================
+    # START
+    # =====================================================
+
+    def _start_chat(self):
+
+        self.chat.controls.clear()
+
+        self.chat.controls.append(
+
+            build_ai(
+                "Hola, ¿qué entidad quieres consultar hoy?"
+            )
         )
 
-    # =================================================
-    # ENTIDAD
-    # =================================================
+    # =====================================================
+    # SEARCH
+    # =====================================================
 
     def _on_search_entidad(self, e):
 
         self.entidad_search_handler.handle(e)
 
-    def _on_entidad_selected(self, index):
-
-        self.entidad_selection_handler.handle(index)
-
-    # =================================================
-    # ESTUDIO
-    # =================================================
-
     def _on_search_estudio(self, e):
 
         self.estudio_search_handler.handle(e)
+
+    # =====================================================
+    # SELECT
+    # =====================================================
+
+    def _on_entidad_selected(self, index):
+
+        self.entidad_selection_handler.handle(index)
 
     def _on_estudio_selected(self, index):
 
         self.estudio_selection_handler.handle(index)
 
-    # =================================================
-    # KEYBOARD NAVIGATION
-    # =================================================
+    # =====================================================
+    # DETAIL
+    # =====================================================
 
-    def _on_keyboard_event(self, e):
+    def _open_detail(self, payload):
 
-        focused = (
-            getattr(e, "control", None)
-            or
-            getattr(e, "target", None)
-        )
+        controls = []
 
-        # -------------------------------------------------
-        # ESC
-        # -------------------------------------------------
+        for k, v in payload.items():
 
-        if e.key == "Escape":
-
-            self.ui[
-                "estudio_results_container"
-            ].controls = []
-
-            self.ui[
-                "entidad_results_container"
-            ].controls = []
-
-            self.page.update()
-
-            return
-
-        # -------------------------------------------------
-        # ENTIDAD NAVIGATION
-        # -------------------------------------------------
-
-        if focused is self.left_panel.search_entidad_input:
-
-            self.search_navigation_handler.handle(
-
-                e,
-
-                self.state.entidad_results,
-
-                "entidad_selected_index",
-
-                self._render_entidad_results,
-
-                self._on_entidad_selected
+            controls.append(
+                ft.Text(f"{k}: {v}")
             )
 
-        # -------------------------------------------------
-        # ESTUDIO NAVIGATION
-        # -------------------------------------------------
-
-        elif focused is self.left_panel.search_estudio_input:
-
-            self.search_navigation_handler.handle(
-
-                e,
-
-                self.state.estudio_results,
-
-                "estudio_selected_index",
-
-                self._render_estudio_results,
-
-                self._on_estudio_selected
-            )
-
-    # =================================================
-    # RENDER ENTIDADES
-    # =================================================
-
-    def _render_entidad_results(self):
-
-        from .components.search_results_list import (
-            build as build_search_results
+        show_detail_modal(
+            self.page,
+            "Detalle",
+            controls
         )
 
-        self.ui[
-            "entidad_results_container"
-        ].controls = build_search_results(
+    # =====================================================
+    # RESTART
+    # =====================================================
 
-            "Entidades disponibles",
+    def _restart_flow(self, e):
 
-            self.state.entidad_results,
+        self.state.reset()
 
-            self.state.entidad_selected_index,
+        self.entidad_input.visible = True
+        self.estudio_input.visible = False
 
-            self._on_entidad_selected
-        )
+        self.entidad_input.value = ""
+        self.estudio_input.value = ""
 
-    # =================================================
-    # RENDER ESTUDIOS
-    # =================================================
+        self.results_container.controls.clear()
 
-    def _render_estudio_results(self):
+        self._start_chat()
 
-        from .components.search_results_list import (
-            build as build_search_results
-        )
+        self.entidad_input.focus()
 
-        self.ui[
-            "estudio_results_container"
-        ].controls = build_search_results(
+        self.page.update()
 
-            "Estudios disponibles",
-
-            self.state.estudio_results,
-
-            self.state.estudio_selected_index,
-
-            self._on_estudio_selected
-        )
-
-    # =================================================
+    # =====================================================
     # BUILD
-    # =================================================
+    # =====================================================
 
     def build(self):
 
-        return build_consulta_layout(
+        return ft.Container(
 
-            build_left_panel(
-                self.left_panel.panel
-            ),
+            expand=True,
 
-            build_right_panel(
-                self.right_panel.panel
+            padding=20,
+
+            content=ft.Column(
+
+                expand=True,
+
+                controls=[
+
+                    self.chat,
+
+                    self.results_container,
+
+                    self.entidad_input,
+
+                    self.estudio_input
+                ]
             )
         )

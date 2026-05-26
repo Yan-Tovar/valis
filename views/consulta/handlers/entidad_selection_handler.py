@@ -1,7 +1,9 @@
-from core.components.alerts.snackbar import Snackbar
+from ..components.chat_bubble_ai import (
+    build as build_ai
+)
 
-from ..components.search_results_list import (
-    build as build_search_results
+from ..components.chat_bubble_user import (
+    build as build_user
 )
 
 
@@ -12,64 +14,39 @@ class EntidadSelectionHandler:
         page,
         controller,
         state,
-        ui,
-        on_select_estudio
+        ui
     ):
 
         self.page = page
         self.controller = controller
         self.state = state
         self.ui = ui
-        self.on_select_estudio = on_select_estudio
 
     def handle(self, index):
-
-        if (
-            index is None
-            or
-            index >= len(self.state.entidad_results)
-        ):
-            return
 
         entidad = self.state.entidad_results[index]
 
         self.state.entidad_selected = entidad
+        self.state.entidad_id = entidad["id"]
 
-        self.state.entidad_id = int(
-            entidad.get("id", 0)
+        self.ui["chat"].controls.append(
+            build_user(
+                entidad["nombre"]
+            )
         )
 
-        self.state.entidad_query = (
-            f"{entidad.get('codigo_entidad', '')} - "
-            f"{entidad.get('nombre', '')}"
+        self.ui["chat"].controls.append(
+            build_ai(
+                f"La entidad {entidad['nombre']} tiene contratos disponibles. Ahora selecciona el estudio."
+            )
         )
 
-        self.state.entidad_results_visible = False
+        self.ui["entidad_input"].visible = False
+        self.ui["results_container"].controls = []
 
-        self.ui["search_entidad_input"].value = (
-            self.state.entidad_query
-        )
+        self.ui["estudio_input"].visible = True
+        self.ui["estudio_input"].focus()
 
-        self.ui["entidad_results_container"].controls = []
-
-        # ---------------------------------------------------------
-        # HABILITAR BUSQUEDA DE ESTUDIO
-        # ---------------------------------------------------------
-
-        self.ui["search_estudio_input"].visible = True
-
-        self.ui["search_estudio_input"].value = ""
-
-        # Limpiar resultados de estudios previos
-        self.ui["estudio_results_container"].controls = []
-
-        # Resetear estado de estudios
-        self.state.estudio_results = []
-        self.state.estudio_selected = None
-        self.state.estudio_selected_index = 0
-        self.state.estudio_id = None
+        self.state.current_step = "estudio"
 
         self.page.update()
-
-        # Dar foco al input de estudio para que el usuario empiece a escribir
-        self.ui["search_estudio_input"].focus()

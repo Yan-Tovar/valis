@@ -1,6 +1,11 @@
 class SearchNavigationHandler:
 
-    def __init__(self, page, state, ui):
+    def __init__(
+        self,
+        page,
+        state,
+        ui
+    ):
 
         self.page = page
         self.state = state
@@ -10,61 +15,42 @@ class SearchNavigationHandler:
         self,
         e,
         results,
-        selected_index_key,
-        render_results,
-        select_by_index
+        selected_attr,
+        on_select
     ):
 
-        key = getattr(e, "key", None)
-
-        if not key or not results:
+        if not results:
             return
 
-        index = getattr(
+        current = getattr(
             self.state,
-            selected_index_key,
-            0
+            selected_attr
         )
 
-        if key in ("ArrowDown", "Down"):
+        if e.key == "Arrow Down":
 
-            index = (
-                index + 1
-            ) % len(results)
-
-            setattr(
-                self.state,
-                selected_index_key,
-                index
+            current = min(
+                current + 1,
+                len(results) - 1
             )
 
-            render_results()
+        elif e.key == "Arrow Up":
 
-            self.page.update()
-
-        elif key in ("ArrowUp", "Up"):
-
-            index = (
-                index - 1
-            ) % len(results)
-
-            setattr(
-                self.state,
-                selected_index_key,
-                index
+            current = max(
+                current - 1,
+                0
             )
 
-            render_results()
+        elif e.key == "Enter":
 
-            self.page.update()
+            on_select(current)
 
-        elif key == "Enter":
+            return
 
-            select_by_index(index)
+        setattr(
+            self.state,
+            selected_attr,
+            current
+        )
 
-        elif key == "Escape":
-
-            self.state.estudio_results_visible = False
-            self.state.entidad_results_visible = False
-
-            self.page.update()
+        self.page.update()
