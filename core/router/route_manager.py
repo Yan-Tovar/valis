@@ -62,6 +62,10 @@ from views.recomendaciones_estudio.recomendaciones_estudio_view import (
     RecomendacionesEstudioView
 )
 
+from views.database.backup_view import (
+    BackupView
+)
+
 from core.router.routes import (
     Routes
 )
@@ -131,7 +135,10 @@ class RouteManager:
                 RecomendacionesEntidadesView(page),
 
             Routes.RECOMENDACIONES_ESTUDIOS:
-                RecomendacionesEstudioView(page)
+                RecomendacionesEstudioView(page),
+
+            Routes.BACKUP:
+                BackupView(page)
         }
 
         return routes.get(route)

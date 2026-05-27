@@ -33,3 +33,5 @@ class Routes:
     RECOMENDACIONES_ENTIDADES = "/recomendaciones-entidades"
 
     RECOMENDACIONES_ESTUDIOS = "/recomendaciones-estudios"
+
+    BACKUP = "/backup"

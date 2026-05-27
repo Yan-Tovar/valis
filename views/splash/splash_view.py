@@ -25,20 +25,23 @@ class SplashView:
 
         self.page = page
 
+        self.started = False
+
         self.controller = SplashController(
             page
         )
 
-
-    # --------------------------------------------------
+    # ==================================================
     # BUILD
-    # --------------------------------------------------
+    # ==================================================
 
     def build(self):
 
-        # START FLOW
+        if not self.started:
 
-        self.controller.start()
+            self.started = True
+
+            self.controller.start()
 
         return ft.Container(
 
@@ -54,21 +57,21 @@ class SplashView:
 
                 controls=[
 
-                    # -------------------------------------
+                    # ======================================
                     # BACKGROUND
-                    # -------------------------------------
+                    # ======================================
 
                     SplashBackground(),
 
-                    # -------------------------------------
-                    # LOGO
-                    # -------------------------------------
+                    # ======================================
+                    # LOGO CONTENT
+                    # ======================================
 
                     ft.Container(
 
-                        alignment=ft.alignment.center,
+                        expand=True,
 
-                        margin=ft.margin.only(top=500),
+                        alignment=ft.alignment.center,
 
                         content=AnimatedLogo(
                             self.page

@@ -15,7 +15,6 @@ from core.theme.spacing import (
 
 class LoginForm(ft.Column):
 
-
     def __init__(
         self,
         on_login
@@ -23,18 +22,21 @@ class LoginForm(ft.Column):
 
         super().__init__()
 
+        self.width = 320
+
         self.spacing = Spacing.MD
 
         self.horizontal_alignment = (
             ft.CrossAxisAlignment.CENTER
         )
 
-        # -------------------------------------------------
+        # =================================================
         # INPUTS
-        # -------------------------------------------------
+        # =================================================
 
         self.nombre_usuario = TextInput(
-            label="Usuario"
+            label="Usuario",
+            autofocus=True
         )
 
         self.password = TextInput(
@@ -42,9 +44,9 @@ class LoginForm(ft.Column):
             password=True
         )
 
-        # -------------------------------------------------
+        # =================================================
         # EVENTS
-        # -------------------------------------------------
+        # =================================================
 
         self.nombre_usuario.on_submit = (
             self.focus_password
@@ -56,9 +58,9 @@ class LoginForm(ft.Column):
 
         self.on_login = on_login
 
-        # -------------------------------------------------
+        # =================================================
         # UI
-        # -------------------------------------------------
+        # =================================================
 
         self.controls = [
 
@@ -70,25 +72,23 @@ class LoginForm(ft.Column):
 
                 text="Ingresar",
 
-                width=260,
+                width=None,
 
                 on_click=self.submit_login
             )
         ]
 
-
-    # -------------------------------------------------
+    # =================================================
     # FOCUS PASSWORD
-    # -------------------------------------------------
+    # =================================================
 
     def focus_password(self, e):
 
         self.password.focus()
 
-
-    # -------------------------------------------------
+    # =================================================
     # SUBMIT
-    # -------------------------------------------------
+    # =================================================
 
     def submit_login(self, e):
 

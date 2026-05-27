@@ -5,17 +5,19 @@ from core.theme.colors import AppColors
 
 class PrimaryButton(ft.Container):
 
-
     def __init__(
         self,
         text,
         on_click=None,
         color=AppColors.PRIMARY,
         icon=None,
-        width=160
+        width=160,
+        expand=False
     ):
 
         super().__init__()
+
+        self.expand = expand
 
         self.content = ft.ElevatedButton(
 
@@ -23,7 +25,7 @@ class PrimaryButton(ft.Container):
 
             icon=icon,
 
-            width=width,
+            width=None if expand else width,
 
             height=45,
 

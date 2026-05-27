@@ -11,17 +11,17 @@ from views.auth.login_form import (
 
 class LoginCard(ft.Container):
 
-
     def __init__(
         self,
-        on_login
+        on_login,
+        mobile=False
     ):
 
         super().__init__()
 
-        self.width = 380
+        self.width = 360 if mobile else 420
 
-        self.padding = 35
+        self.padding = 25 if mobile else 35
 
         self.bgcolor = AppColors.WHITE
 
@@ -50,7 +50,9 @@ class LoginCard(ft.Container):
 
             controls=[
 
+                # =====================================
                 # TITLE
+                # =====================================
 
                 ft.Column(
 
@@ -66,7 +68,7 @@ class LoginCard(ft.Container):
 
                             "Bienvenido",
 
-                            size=28,
+                            size=24 if mobile else 28,
 
                             weight=ft.FontWeight.BOLD,
 
@@ -77,14 +79,16 @@ class LoginCard(ft.Container):
 
                             "Ingresa tus credenciales",
 
-                            size=14,
+                            size=13 if mobile else 14,
 
                             color=AppColors.DARK_GRAY
                         )
                     ]
                 ),
 
+                # =====================================
                 # FORM
+                # =====================================
 
                 LoginForm(
                     on_login

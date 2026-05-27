@@ -11,32 +11,28 @@ from views.auth.components.login_card import (
 
 class LoginRightPanel(ft.Container):
 
-
     def __init__(
         self,
-        on_login
+        on_login,
+        mobile=False
     ):
 
         super().__init__()
 
-        self.expand = True
+        self.expand = not mobile
 
         self.bgcolor = AppColors.PRIMARY_LIGHT
 
-        self.content = ft.Column(
+        self.padding = 20
 
-            expand=True,
+        self.alignment = ft.alignment.center
 
-            alignment=ft.MainAxisAlignment.CENTER,
+        self.content = ft.Container(
 
-            horizontal_alignment=(
-                ft.CrossAxisAlignment.CENTER
-            ),
+            alignment=ft.alignment.center,
 
-            controls=[
-
-                LoginCard(
-                    on_login
-                )
-            ]
+            content=LoginCard(
+                on_login,
+                mobile=mobile
+            )
         )

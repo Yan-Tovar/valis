@@ -15,7 +15,7 @@ def tables_exist():
 
     inspector = inspect(engine)
 
-    return inspector.get_table_names()
+    return inspector.has_table("usuarios")
 
 
 # -------------------------------------------------

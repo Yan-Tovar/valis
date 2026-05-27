@@ -10,15 +10,60 @@ class SplashBackground(ft.Container):
 
         self.expand = True
 
-        self.alignment = ft.alignment.center
+        self.bgcolor = "white"
 
-        self.content = ft.Image(
+        # ==================================================
+        # DECORATIVE BACKGROUND
+        # ==================================================
 
-            src="parrot.gif",
+        self.content = ft.Stack(
 
-            width=850,
+            expand=True,
 
-            height=850,
+            controls=[
 
-            fit=ft.ImageFit.CONTAIN
+                # ==========================================
+                # LIGHT DECORATIVE CIRCLE
+                # ==========================================
+
+                ft.Container(
+
+                    width=700,
+
+                    height=700,
+
+                    border_radius=350,
+
+                    bgcolor="#F5F9F7",
+
+                    opacity=0.7,
+
+                    alignment=ft.alignment.center,
+
+                    left=-120,
+
+                    top=-120
+                ),
+
+                # ==========================================
+                # SECONDARY SHAPE
+                # ==========================================
+
+                ft.Container(
+
+                    width=450,
+
+                    height=450,
+
+                    border_radius=225,
+
+                    bgcolor="#EEF7F1",
+
+                    opacity=0.8,
+
+                    right=-80,
+
+                    bottom=-80
+                )
+            ]
         )

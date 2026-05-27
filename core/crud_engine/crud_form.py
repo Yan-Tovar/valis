@@ -42,6 +42,8 @@ class CrudForm:
 
         self.inputs = {}
 
+        self.input_order = []
+
         self.record_id = None
 
         self.dialog = ft.AlertDialog(
@@ -122,6 +124,14 @@ class CrudForm:
                 input_control
             )
 
+            self.input_order.append(field_name)
+
+            # Attach enter key handler
+            self._attach_enter_handler(
+                input_control,
+                field_name
+            )
+
             controls.append(
                 input_control
             )
@@ -129,6 +139,77 @@ class CrudForm:
         self.dialog.content.content.controls = (
             controls
         )
+
+    # ---------------------------------------------------------
+    # ATTACH ENTER HANDLER
+    # ---------------------------------------------------------
+
+    def _attach_enter_handler(
+        self,
+        input_control,
+        field_name
+    ):
+
+        """Attach enter key handler to input fields for navigation"""
+
+        def on_enter(e):
+            self._handle_enter_key(field_name)
+
+        # Handle different input types
+        if isinstance(input_control, ft.Row):
+            # For date fields wrapped in Row
+            if len(input_control.controls) > 0:
+                input_control.controls[0].on_submit = on_enter
+
+        elif hasattr(input_control, 'on_submit'):
+            # For TextField and similar controls
+            input_control.on_submit = on_enter
+
+        elif hasattr(input_control, 'on_change'):
+            # Fallback for other input types
+            pass
+
+    # ---------------------------------------------------------
+    # HANDLE ENTER KEY
+    # ---------------------------------------------------------
+
+    def _handle_enter_key(
+        self,
+        current_field
+    ):
+
+        """Navigate to next field or submit on last field when Enter is pressed"""
+
+        current_index = self.input_order.index(
+            current_field
+        ) if current_field in self.input_order else -1
+
+        # If not the last input, focus next input
+        if current_index >= 0 and current_index < len(
+            self.input_order
+        ) - 1:
+
+            next_field = self.input_order[
+                current_index + 1
+            ]
+
+            next_control = self.inputs[next_field]
+
+            # Focus the next control
+            if isinstance(next_control, ft.Row):
+                if len(next_control.controls) > 0:
+                    next_control.controls[0].focus()
+            else:
+                next_control.focus()
+
+            self.page.update()
+
+        # If last input, submit form
+        elif current_index == len(
+            self.input_order
+        ) - 1:
+
+            self.submit(None)
 
     # ---------------------------------------------------------
     # DIALOG BUILDER

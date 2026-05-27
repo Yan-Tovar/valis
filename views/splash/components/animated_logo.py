@@ -21,15 +21,23 @@ class AnimatedLogo(ft.Column):
 
         self.text = text
 
+        # ==================================================
+        # LAYOUT
+        # ==================================================
+
         self.horizontal_alignment = (
             ft.CrossAxisAlignment.CENTER
         )
 
-        self.spacing = 5
+        self.alignment = (
+            ft.MainAxisAlignment.CENTER
+        )
 
-        # --------------------------------------------------
+        self.spacing = 0
+
+        # ==================================================
         # LETTERS
-        # --------------------------------------------------
+        # ==================================================
 
         self.letters = []
 
@@ -39,7 +47,7 @@ class AnimatedLogo(ft.Column):
 
                 value=char,
 
-                size=54,
+                size=56,
 
                 weight=ft.FontWeight.W_700,
 
@@ -47,7 +55,7 @@ class AnimatedLogo(ft.Column):
 
                 opacity=0,
 
-                offset=ft.transform.Offset(0, -2),
+                offset=ft.transform.Offset(0, -1.5),
 
                 animate_opacity=400,
 
@@ -59,46 +67,89 @@ class AnimatedLogo(ft.Column):
 
             self.letters.append(letter)
 
-        # --------------------------------------------------
+        # ==================================================
         # UI
-        # --------------------------------------------------
+        # ==================================================
 
         self.controls = [
 
-            ft.Row(
+            # ==============================================
+            # GIF
+            # ==============================================
 
-                alignment=ft.MainAxisAlignment.CENTER,
+            ft.Image(
 
-                spacing=2,
+                src="parrot.gif",
 
-                controls=self.letters
+                width=640,
+
+                fit=ft.ImageFit.CONTAIN
             ),
 
-            ft.Text(
+            # ==============================================
+            # TEXT BLOCK
+            # ==============================================
 
-                "Validación para Citas",
+            ft.Container(
 
-                size=FontSize.TEXT,
+                margin=ft.margin.only(top=-70),
 
-                color=AppColors.DARK_GRAY,
+                content=ft.Column(
 
-                text_align=ft.TextAlign.CENTER
+                    horizontal_alignment=(
+                        ft.CrossAxisAlignment.CENTER
+                    ),
+
+                    spacing=-4,
+
+                    controls=[
+
+                        # ==================================
+                        # TITLE
+                        # ==================================
+
+                        ft.Row(
+
+                            alignment=(
+                                ft.MainAxisAlignment.CENTER
+                            ),
+
+                            spacing=2,
+
+                            controls=self.letters
+                        ),
+
+                        # ==================================
+                        # SUBTITLE
+                        # ==================================
+
+                        ft.Text(
+
+                            "Validación para Citas",
+
+                            size=FontSize.TEXT,
+
+                            color=AppColors.DARK_GRAY,
+
+                            text_align=ft.TextAlign.CENTER
+                        )
+                    ]
+                )
             )
         ]
 
-        # --------------------------------------------------
+        # ==================================================
         # START ANIMATION
-        # --------------------------------------------------
+        # ==================================================
 
         threading.Thread(
             target=self.animate,
             daemon=True
         ).start()
 
-
-    # ------------------------------------------------------
+    # ======================================================
     # ANIMATION
-    # ------------------------------------------------------
+    # ======================================================
 
     def animate(self):
 
@@ -108,7 +159,9 @@ class AnimatedLogo(ft.Column):
 
             letter.opacity = 1
 
-            letter.offset = ft.transform.Offset(0, 0)
+            letter.offset = (
+                ft.transform.Offset(0, 0)
+            )
 
             self.page.update()
 

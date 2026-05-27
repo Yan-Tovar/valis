@@ -15,7 +15,6 @@ from views.auth.components.login_right_panel import (
 
 class LoginView:
 
-
     def __init__(
         self,
         page: ft.Page
@@ -27,16 +26,61 @@ class LoginView:
             LoginController(page)
         )
 
-
-    # -------------------------------------------------
+    # =================================================
     # BUILD
-    # -------------------------------------------------
+    # =================================================
 
     def build(self):
+
+        is_mobile = self.page.width < 900
+        page_width = self.page.width
+
+        # =============================================
+        # MOBILE
+        # =============================================
+
+        if is_mobile:
+
+            return ft.Container(
+
+                expand=True,
+
+                bgcolor="white",
+
+                content=ft.Column(
+
+                    expand=True,
+
+                    scroll=ft.ScrollMode.AUTO,
+
+                    spacing=0,
+
+                    controls=[
+
+                        LoginLeftPanel(
+                            mobile=True,
+                            width=page_width
+                        ),
+
+                        LoginRightPanel(
+                            on_login=(
+                                self.controller.login
+                            ),
+                            mobile=True
+                        )
+                    ]
+                )
+            )
+
+        # =============================================
+        # DESKTOP
+        # =============================================
 
         return ft.Container(
 
             expand=True,
+
+            bgcolor="white",
 
             content=ft.Row(
 
@@ -46,14 +90,11 @@ class LoginView:
 
                 controls=[
 
-                    # LEFT
-
-                    LoginLeftPanel(),
-
-                    # RIGHT
+                    LoginLeftPanel(
+                        width=page_width
+                    ),
 
                     LoginRightPanel(
-
                         on_login=(
                             self.controller.login
                         )

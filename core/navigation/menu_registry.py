@@ -239,5 +239,23 @@ MENU_REGISTRY = [
         "roles": [
             Permissions.ADMIN
         ]
+    },
+
+    # -------------------------------------------------
+    # BASE DE DATOS
+    # -------------------------------------------------
+
+    {
+        "section": "Base de Datos",
+
+        "label": "Backup",
+
+        "icon": "backup",
+
+        "route": Routes.BACKUP,
+
+        "roles": [
+            Permissions.ADMIN
+        ]
     }
 ]
