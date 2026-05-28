@@ -7,15 +7,15 @@ from core.services.dashboard_statistics_service import (
 
 class DashboardView:
 
-    # =================================================
+    # =====================================================
     # TITLE
-    # =================================================
+    # =====================================================
 
     title = "Dashboard"
 
-    # =================================================
+    # =====================================================
     # INIT
-    # =================================================
+    # =====================================================
 
     def __init__(
         self,
@@ -28,21 +28,30 @@ class DashboardView:
             DashboardStatisticsService()
         )
 
-    # =================================================
-    # HELPERS
-    # =================================================
+    # =====================================================
+    # KPI CARD
+    # =====================================================
 
-    def build_section(
+    def build_kpi_card(
         self,
         title,
-        data
+        value,
+        icon,
+        color
     ):
 
         return ft.Container(
 
+            col={
+                "xs": 12,
+                "sm": 6,
+                "md": 4,
+                "lg": 2.4
+            },
+
             padding=20,
 
-            border_radius=12,
+            border_radius=18,
 
             bgcolor="white",
 
@@ -51,9 +60,102 @@ class DashboardView:
                 "#E5E7EB"
             ),
 
+            content=ft.Row(
+
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+
+                controls=[
+
+                    ft.Column(
+
+                        spacing=4,
+
+                        controls=[
+
+                            ft.Text(
+
+                                title,
+
+                                size=13,
+
+                                color="#6B7280",
+
+                                weight=ft.FontWeight.W_500
+                            ),
+
+                            ft.Text(
+
+                                str(value),
+
+                                size=28,
+
+                                weight=ft.FontWeight.BOLD,
+
+                                color="#111827"
+                            )
+                        ]
+                    ),
+
+                    ft.Container(
+
+                        width=52,
+                        height=52,
+
+                        border_radius=14,
+
+                        bgcolor=color,
+
+                        alignment=ft.alignment.center,
+
+                        content=ft.Icon(
+                            icon,
+                            color="white",
+                            size=26
+                        )
+                    )
+                ]
+            )
+        )
+
+    # =====================================================
+    # SECTION CARD
+    # =====================================================
+
+    def build_chart_card(
+        self,
+        title,
+        content,
+        col=None,
+        height=420
+    ):
+
+        return ft.Container(
+
+            col=col or {
+                "xs": 12,
+                "lg": 6
+            },
+
+            height=height,
+
+            bgcolor="white",
+
+            border_radius=20,
+
+            padding=20,
+
+            border=ft.border.all(
+                1,
+                "#E5E7EB"
+            ),
+
             content=ft.Column(
 
-                spacing=10,
+                expand=True,
+
+                spacing=15,
 
                 controls=[
 
@@ -61,90 +163,295 @@ class DashboardView:
 
                         title,
 
-                        size=20,
+                        size=18,
 
-                        weight=ft.FontWeight.BOLD
+                        weight=ft.FontWeight.BOLD,
+
+                        color="#111827"
                     ),
 
-                    ft.Divider(),
+                    ft.Divider(height=1),
 
-                    ft.Text(
-                        str(data),
-                        selectable=True
+                    ft.Container(
+                        expand=True,
+                        content=content
                     )
                 ]
             )
         )
 
-    # =================================================
+    # =====================================================
+    # HORIZONTAL BAR CHART
+    # =====================================================
+
+    def build_horizontal_chart(
+        self,
+        data,
+        label_key,
+        value_key,
+        color="#2563EB"
+    ):
+
+        if not data:
+
+            return ft.Text("Sin datos")
+
+        max_value = max(
+            item[value_key]
+            for item in data
+        )
+
+        rows = []
+
+        for item in data:
+
+            value = item[value_key]
+
+            width_factor = (
+                value / max_value
+            )
+
+            rows.append(
+
+                ft.Column(
+
+                    spacing=4,
+
+                    controls=[
+
+                        ft.Row(
+
+                            alignment=(
+                                ft.MainAxisAlignment
+                                .SPACE_BETWEEN
+                            ),
+
+                            controls=[
+
+                                ft.Text(
+
+                                    item[label_key][:45],
+
+                                    size=12,
+
+                                    weight=(
+                                        ft.FontWeight.W_500
+                                    )
+                                ),
+
+                                ft.Text(
+                                    str(value),
+                                    size=12
+                                )
+                            ]
+                        ),
+
+                        ft.Container(
+
+                            height=12,
+
+                            border_radius=20,
+
+                            bgcolor="#E5E7EB",
+
+                            content=ft.Row(
+
+                                spacing=0,
+
+                                controls=[
+
+                                    ft.Container(
+
+                                        width=(
+                                            500 * width_factor
+                                        ),
+
+                                        bgcolor=color,
+
+                                        border_radius=20
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            )
+
+        return ft.Column(
+
+            scroll=ft.ScrollMode.AUTO,
+
+            spacing=18,
+
+            controls=rows
+        )
+
+    # =====================================================
+    # PIE CHART
+    # =====================================================
+
+    def build_pie_chart(
+        self,
+        sections
+    ):
+
+        return ft.PieChart(
+
+            sections=sections,
+
+            center_space_radius=45,
+
+            sections_space=2,
+
+            expand=True
+        )
+
+    # =====================================================
+    # ALERT LIST
+    # =====================================================
+
+    def build_alert_list(
+        self,
+        data,
+        key
+    ):
+
+        return ft.Column(
+
+            scroll=ft.ScrollMode.AUTO,
+
+            spacing=10,
+
+            controls=[
+
+                ft.Container(
+
+                    padding=12,
+
+                    border_radius=12,
+
+                    bgcolor="#FEF3C7",
+
+                    content=ft.Row(
+
+                        controls=[
+
+                            ft.Icon(
+                                ft.icons.WARNING,
+                                color="#D97706"
+                            ),
+
+                            ft.Text(
+
+                                item[key],
+
+                                expand=True,
+
+                                size=13,
+
+                                color="#92400E"
+                            )
+                        ]
+                    )
+                )
+
+                for item in data
+            ]
+        )
+
+    # =====================================================
     # BUILD
-    # =================================================
+    # =====================================================
 
     def build(self):
 
-        # =============================================
-        # LOAD DATA
-        # =============================================
+        # =================================================
+        # DATA
+        # =================================================
 
-        general_kpis = (
-            self.service.get_general_kpis()
+        kpis = (
+            self.service
+            .get_general_kpis()
+            .data
         )
 
         top_estudios = (
-            self.service.get_top_estudios_mas_contratados()
+            self.service
+            .get_top_estudios_mas_contratados()
+            .data
         )
 
         top_entidades = (
-            self.service.get_top_entidades_contratantes()
+            self.service
+            .get_top_entidades_contratantes()
+            .data
         )
 
-        estudios_por_entidad = (
-            self.service.get_estudios_por_entidad()
+        estudios_entidad = (
+            self.service
+            .get_estudios_por_entidad()
+            .data
         )
 
-        estudios_con_salas = (
-            self.service.get_estudios_con_mas_salas()
+        estudios_salas = (
+            self.service
+            .get_estudios_con_mas_salas()
+            .data
         )
 
-        salas_mas_utilizadas = (
-            self.service.get_salas_mas_utilizadas()
+        salas_utilizadas = (
+            self.service
+            .get_salas_mas_utilizadas()
+            .data
         )
 
         estudios_sin_sala = (
-            self.service.get_estudios_sin_sala()
+            self.service
+            .get_estudios_sin_sala()
+            .data
         )
 
-        estudios_preparacion = (
-            self.service.get_estudios_con_y_sin_preparacion()
+        preparaciones = (
+            self.service
+            .get_estudios_con_y_sin_preparacion()
+            .data
         )
 
         preparaciones_complejas = (
-            self.service.get_preparaciones_mas_complejas()
+            self.service
+            .get_preparaciones_mas_complejas()
+            .data
         )
 
         contratos_estado = (
-            self.service.get_contratos_estado()
+            self.service
+            .get_contratos_estado()
+            .data
         )
 
-        estudios_recomendaciones = (
-            self.service.get_estudios_con_mas_recomendaciones()
+        recomendaciones = (
+            self.service
+            .get_estudios_con_mas_recomendaciones()
+            .data
         )
 
         usuarios_roles = (
-            self.service.get_usuarios_por_rol()
+            self.service
+            .get_usuarios_por_rol()
+            .data
         )
 
-        # =============================================
+        # =================================================
         # UI
-        # =============================================
+        # =================================================
 
         return ft.Container(
 
             expand=True,
 
-            padding=20,
+            bgcolor="#F3F4F6",
 
-            bgcolor="#F5F7FA",
+            padding=25,
 
             content=ft.Column(
 
@@ -152,179 +459,406 @@ class DashboardView:
 
                 scroll=ft.ScrollMode.AUTO,
 
-                spacing=20,
+                spacing=25,
 
                 controls=[
 
-                    # =================================
-                    # TITLE
-                    # =================================
+                    # =====================================
+                    # HEADER
+                    # =====================================
 
-                    ft.Text(
+                    ft.Column(
 
-                        "Dashboard Estadístico",
+                        spacing=4,
 
-                        size=32,
+                        controls=[
 
-                        weight=ft.FontWeight.BOLD
+                            ft.Text(
+
+                                "Dashboard Estadístico",
+
+                                size=32,
+
+                                weight=ft.FontWeight.BOLD,
+
+                                color="#111827"
+                            ),
+
+                            ft.Text(
+
+                                "Resumen general del sistema",
+
+                                size=14,
+
+                                color="#6B7280"
+                            )
+                        ]
                     ),
 
-                    # =================================
-                    # GENERAL KPIS
-                    # =================================
+                    # =====================================
+                    # KPI ROW
+                    # =====================================
 
-                    self.build_section(
+                    ft.ResponsiveRow(
 
-                        "KPIs Generales",
+                        spacing=20,
+                        run_spacing=20,
 
-                        general_kpis.data
-                        if general_kpis.success
-                        else general_kpis.message
+                        controls=[
+
+                            self.build_kpi_card(
+                                "Entidades",
+                                kpis["total_entidades"],
+                                ft.icons.BUSINESS,
+                                "#2563EB"
+                            ),
+
+                            self.build_kpi_card(
+                                "Estudios",
+                                kpis["total_estudios"],
+                                ft.icons.MEDICAL_SERVICES,
+                                "#059669"
+                            ),
+
+                            self.build_kpi_card(
+                                "Contratos",
+                                kpis["total_contratos"],
+                                ft.icons.DESCRIPTION,
+                                "#D97706"
+                            ),
+
+                            self.build_kpi_card(
+                                "Salas",
+                                kpis["total_salas"],
+                                ft.icons.MEETING_ROOM,
+                                "#7C3AED"
+                            ),
+
+                            self.build_kpi_card(
+                                "Preparaciones",
+                                kpis["total_preparaciones"],
+                                ft.icons.FACT_CHECK,
+                                "#DC2626"
+                            ),
+
+                            self.build_kpi_card(
+                                "Usuarios",
+                                kpis["total_usuarios"],
+                                ft.icons.GROUP,
+                                "#0F766E"
+                            )
+                        ]
                     ),
 
-                    # =================================
-                    # TOP ESTUDIOS
-                    # =================================
+                    # =====================================
+                    # ROW 1
+                    # =====================================
 
-                    self.build_section(
+                    ft.ResponsiveRow(
 
-                        "Top Estudios Más Contratados",
+                        spacing=20,
+                        run_spacing=20,
 
-                        top_estudios.data
-                        if top_estudios.success
-                        else top_estudios.message
+                        controls=[
+
+                            self.build_chart_card(
+
+                                "Top Estudios Más Contratados",
+
+                                self.build_horizontal_chart(
+
+                                    top_estudios,
+
+                                    "estudio",
+
+                                    "cantidad",
+
+                                    "#2563EB"
+                                )
+                            ),
+
+                            self.build_chart_card(
+
+                                "Top Entidades Contratantes",
+
+                                self.build_horizontal_chart(
+
+                                    top_entidades,
+
+                                    "entidad",
+
+                                    "cantidad",
+
+                                    "#059669"
+                                )
+                            )
+                        ]
                     ),
 
-                    # =================================
-                    # TOP ENTIDADES
-                    # =================================
+                    # =====================================
+                    # ROW 2
+                    # =====================================
 
-                    self.build_section(
+                    ft.ResponsiveRow(
 
-                        "Top Entidades Contratantes",
+                        spacing=20,
+                        run_spacing=20,
 
-                        top_entidades.data
-                        if top_entidades.success
-                        else top_entidades.message
+                        controls=[
+
+                            self.build_chart_card(
+
+                                "Estudios por Entidad",
+
+                                self.build_horizontal_chart(
+
+                                    estudios_entidad,
+
+                                    "entidad",
+
+                                    "cantidad_estudios",
+
+                                    "#7C3AED"
+                                )
+                            ),
+
+                            self.build_chart_card(
+
+                                "Estudios con Más Salas",
+
+                                self.build_horizontal_chart(
+
+                                    estudios_salas,
+
+                                    "estudio",
+
+                                    "cantidad_salas",
+
+                                    "#D97706"
+                                )
+                            )
+                        ]
                     ),
 
-                    # =================================
-                    # ESTUDIOS POR ENTIDAD
-                    # =================================
+                    # =====================================
+                    # ROW 3
+                    # =====================================
 
-                    self.build_section(
+                    ft.ResponsiveRow(
 
-                        "Cantidad de Estudios por Entidad",
+                        spacing=20,
+                        run_spacing=20,
 
-                        estudios_por_entidad.data
-                        if estudios_por_entidad.success
-                        else estudios_por_entidad.message
+                        controls=[
+
+                            self.build_chart_card(
+
+                                "Salas Más Utilizadas",
+
+                                self.build_horizontal_chart(
+
+                                    salas_utilizadas,
+
+                                    "sala",
+
+                                    "cantidad_estudios",
+
+                                    "#DC2626"
+                                )
+                            ),
+
+                            self.build_chart_card(
+
+                                "Preparaciones Más Complejas",
+
+                                self.build_horizontal_chart(
+
+                                    preparaciones_complejas,
+
+                                    "preparacion",
+
+                                    "cantidad_items",
+
+                                    "#0F766E"
+                                )
+                            )
+                        ]
                     ),
 
-                    # =================================
-                    # ESTUDIOS CON MAS SALAS
-                    # =================================
+                    # =====================================
+                    # ROW 4
+                    # =====================================
 
-                    self.build_section(
+                    ft.ResponsiveRow(
 
-                        "Estudios con Más Salas",
+                        spacing=20,
+                        run_spacing=20,
 
-                        estudios_con_salas.data
-                        if estudios_con_salas.success
-                        else estudios_con_salas.message
+                        controls=[
+
+                            self.build_chart_card(
+
+                                "Contratos Activos vs Vencidos",
+
+                                self.build_pie_chart(
+
+                                    sections=[
+
+                                        ft.PieChartSection(
+
+                                            contratos_estado["activos"],
+
+                                            title=f'''
+                                            Activos
+                                            {contratos_estado["activos"]}
+                                            ''',
+
+                                            radius=90,
+
+                                            color="#059669"
+                                        ),
+
+                                        ft.PieChartSection(
+
+                                            contratos_estado["vencidos"],
+
+                                            title=f'''
+                                            Vencidos
+                                            {contratos_estado["vencidos"]}
+                                            ''',
+
+                                            radius=90,
+
+                                            color="#DC2626"
+                                        )
+                                    ]
+                                )
+                            ),
+
+                            self.build_chart_card(
+
+                                "Usuarios por Rol",
+
+                                self.build_pie_chart(
+
+                                    sections=[
+
+                                        ft.PieChartSection(
+
+                                            item["cantidad"],
+
+                                            title=f'''
+                                            {item["rol"]}
+                                            ({item["cantidad"]})
+                                            ''',
+
+                                            radius=90
+                                        )
+
+                                        for item in usuarios_roles
+                                    ]
+                                )
+                            )
+                        ]
                     ),
 
-                    # =================================
-                    # SALAS MAS UTILIZADAS
-                    # =================================
+                    # =====================================
+                    # ROW 5
+                    # =====================================
 
-                    self.build_section(
+                    ft.ResponsiveRow(
 
-                        "Salas Más Utilizadas",
+                        spacing=20,
+                        run_spacing=20,
 
-                        salas_mas_utilizadas.data
-                        if salas_mas_utilizadas.success
-                        else salas_mas_utilizadas.message
+                        controls=[
+
+                            self.build_chart_card(
+
+                                "Estudios con Más Recomendaciones",
+
+                                self.build_horizontal_chart(
+
+                                    recomendaciones,
+
+                                    "estudio",
+
+                                    "cantidad_recomendaciones",
+
+                                    "#2563EB"
+                                )
+                            ),
+
+                            self.build_chart_card(
+
+                                "Estudios Sin Sala",
+
+                                self.build_alert_list(
+
+                                    estudios_sin_sala,
+
+                                    "estudio"
+                                )
+                            )
+                        ]
                     ),
 
-                    # =================================
-                    # ESTUDIOS SIN SALAS
-                    # =================================
+                    # =====================================
+                    # ROW 6
+                    # =====================================
 
-                    self.build_section(
+                    ft.ResponsiveRow(
 
-                        "Estudios Sin Sala",
+                        spacing=20,
+                        run_spacing=20,
 
-                        estudios_sin_sala.data
-                        if estudios_sin_sala.success
-                        else estudios_sin_sala.message
-                    ),
+                        controls=[
 
-                    # =================================
-                    # PREPARACIONES
-                    # =================================
+                            self.build_chart_card(
 
-                    self.build_section(
+                                "Preparaciones Asociadas",
 
-                        "Estudios con y sin Preparación",
+                                self.build_pie_chart(
 
-                        estudios_preparacion.data
-                        if estudios_preparacion.success
-                        else estudios_preparacion.message
-                    ),
+                                    sections=[
 
-                    # =================================
-                    # PREPARACIONES COMPLEJAS
-                    # =================================
+                                        ft.PieChartSection(
 
-                    self.build_section(
+                                            preparaciones[
+                                                "con_preparacion"
+                                            ],
 
-                        "Preparaciones Más Complejas",
+                                            title="Con preparación",
 
-                        preparaciones_complejas.data
-                        if preparaciones_complejas.success
-                        else preparaciones_complejas.message
-                    ),
+                                            radius=90,
 
-                    # =================================
-                    # CONTRATOS
-                    # =================================
+                                            color="#2563EB"
+                                        ),
 
-                    self.build_section(
+                                        ft.PieChartSection(
 
-                        "Contratos Activos vs Vencidos",
+                                            preparaciones[
+                                                "sin_preparacion"
+                                            ],
 
-                        contratos_estado.data
-                        if contratos_estado.success
-                        else contratos_estado.message
-                    ),
+                                            title="Sin preparación",
 
-                    # =================================
-                    # RECOMENDACIONES
-                    # =================================
+                                            radius=90,
 
-                    self.build_section(
+                                            color="#D1D5DB"
+                                        )
+                                    ]
+                                ),
 
-                        "Estudios con Más Recomendaciones",
+                                col={
+                                    "xs": 12,
+                                    "lg": 12
+                                },
 
-                        estudios_recomendaciones.data
-                        if estudios_recomendaciones.success
-                        else estudios_recomendaciones.message
-                    ),
-
-                    # =================================
-                    # USUARIOS
-                    # =================================
-
-                    self.build_section(
-
-                        "Usuarios por Rol",
-
-                        usuarios_roles.data
-                        if usuarios_roles.success
-                        else usuarios_roles.message
+                                height=500
+                            )
+                        ]
                     )
                 ]
             )
         )
-    
