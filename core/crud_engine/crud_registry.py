@@ -94,6 +94,8 @@ CRUD_REGISTRY = {
 
         "service": UsuarioService,
 
+        "pdf_enabled": True,
+
         "columns": [
 
             {
@@ -162,6 +164,8 @@ CRUD_REGISTRY = {
 
         "service": EntidadService,
 
+        "pdf_enabled": True,
+
         "columns": [
 
             {
@@ -215,6 +219,8 @@ CRUD_REGISTRY = {
         "model": Estudio,
 
         "service": EstudioService,
+
+        "pdf_enabled": True,
 
         "columns": [
 
@@ -276,6 +282,8 @@ CRUD_REGISTRY = {
 
         "service": ContratoService,
 
+        "pdf_enabled": True,
+
         "columns": [
 
             {
@@ -333,6 +341,8 @@ CRUD_REGISTRY = {
 
         "service": EntidadContratoService,
 
+        "pdf_enabled": False,
+
         "columns": [
 
             {
@@ -382,6 +392,8 @@ CRUD_REGISTRY = {
         "model": EntidadContratoEstudio,
 
         "service": EntidadContratoEstudioService,
+
+        "pdf_enabled": False,
 
         "columns": [
 
@@ -435,6 +447,8 @@ CRUD_REGISTRY = {
 
         "service": EstudioSalaService,
 
+        "pdf_enabled": False,
+
         "columns": [
 
             {
@@ -481,6 +495,8 @@ CRUD_REGISTRY = {
         "model": Sala,
 
         "service": SalaService,
+
+        "pdf_enabled": True,
 
         "columns": [
 
@@ -546,6 +562,8 @@ CRUD_REGISTRY = {
 
         "service": PreparacionService,
 
+        "pdf_enabled": True,
+
         "columns": [
 
             {
@@ -601,6 +619,8 @@ CRUD_REGISTRY = {
 
         "service": ListaPreparacionService,
 
+        "pdf_enabled": True,
+
         "columns": [
 
             {
@@ -640,6 +660,8 @@ CRUD_REGISTRY = {
         "model": ListaPreparacionPreparacion,
 
         "service": ListaPreparacionPreparacionService,
+
+        "pdf_enabled": False,
 
         "columns": [
 
@@ -687,6 +709,8 @@ CRUD_REGISTRY = {
         "model": RecomendacionEntidad,
 
         "service": RecomendacionEntidadService,
+
+        "pdf_enabled": True,
 
         "columns": [
 
@@ -738,6 +762,8 @@ CRUD_REGISTRY = {
         "model": RecomendacionEstudio,
 
         "service": RecomendacionEstudioService,
+
+        "pdf_enabled": True,
 
         "columns": [
 

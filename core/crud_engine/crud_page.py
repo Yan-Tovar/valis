@@ -34,7 +34,8 @@ class CrudPage:
         service,
         columns,
         fields,
-        routes=None
+        routes=None,
+        pdf_enabled=False
     ):
 
         self.page = page
@@ -48,6 +49,8 @@ class CrudPage:
         self.fields = fields
 
         self.routes = routes or []
+
+        self.pdf_enabled = pdf_enabled
 
         # -------------------------------------------------
         # CONTROLLER
@@ -344,7 +347,11 @@ class CrudPage:
 
                 CrudToolbar(
 
-                    title=self.title,
+                    page=self.page,
+
+                    model=self.service.repository.model,
+
+                    pdf_enabled=self.pdf_enabled,
 
                     on_create=self.open_create,
 

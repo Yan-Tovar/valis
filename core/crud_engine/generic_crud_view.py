@@ -9,7 +9,6 @@ from core.crud_engine.crud_registry import (
 
 class GenericCrudView:
 
-
     def __init__(
         self,
         page,
@@ -20,10 +19,9 @@ class GenericCrudView:
 
         self.module = module
 
-
-    # ---------------------------------------------------------
+    # =====================================================
     # BUILD
-    # ---------------------------------------------------------
+    # =====================================================
 
     def build(self):
 
@@ -45,6 +43,10 @@ class GenericCrudView:
 
             columns=config["columns"],
 
-            fields=config["fields"]
+            fields=config["fields"],
 
+            pdf_enabled=config.get(
+                "pdf_enabled",
+                False
+            )
         ).build()
