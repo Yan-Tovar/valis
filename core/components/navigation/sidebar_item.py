@@ -11,13 +11,18 @@ from core.router.navigation_service import (
 
 class SidebarItem(ft.Container):
 
-
     def __init__(
+
         self,
+
         label,
+
         icon,
+
         route=None,
+
         active=False,
+
         on_click=None
     ):
 
@@ -27,15 +32,19 @@ class SidebarItem(ft.Container):
 
         self.custom_on_click = on_click
 
-        self.border_radius = 10
+        self.padding = ft.padding.symmetric(
 
-        self.padding = 12
+            horizontal=12,
+            vertical=10
+        )
+
+        self.border_radius = 8
 
         self.ink = True
 
         self.bgcolor = (
 
-            AppColors.PRIMARY_DARK
+            AppColors.PRIMARY
             if active
             else "transparent"
         )
@@ -44,29 +53,33 @@ class SidebarItem(ft.Container):
 
         self.content = ft.Row(
 
-            spacing=15,
+            spacing=10,
 
             controls=[
 
                 ft.Icon(
+
                     icon,
-                    color=AppColors.WHITE,
-                    size=20
+
+                    size=18,
+
+                    color=AppColors.WHITE
                 ),
 
                 ft.Text(
+
                     label,
-                    color=AppColors.WHITE,
-                    size=14,
-                    weight=ft.FontWeight.W_500
+
+                    size=13,
+
+                    color=AppColors.WHITE
                 )
             ]
         )
 
-
-    # -------------------------------------------------
+    # =================================================
     # NAVIGATE
-    # -------------------------------------------------
+    # =================================================
 
     def navigate(
         self,

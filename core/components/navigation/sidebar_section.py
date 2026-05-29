@@ -8,31 +8,91 @@ from core.theme.colors import (
 class SidebarSection(ft.Container):
 
     def __init__(
+
         self,
+
         title,
-        controls
+
+        controls,
+
+        opened=False,
+
+        on_toggle=None
     ):
 
-        super().__init__(
+        super().__init__()
 
-            content=ft.Column(
+        self.content = ft.Column(
 
-                spacing=10,
+            spacing=6,
 
-                controls=[
+            controls=[
 
-                    ft.Text(
+                # =================================================
+                # HEADER BUTTON
+                # =================================================
 
-                        title.upper(),
+                ft.Container(
 
-                        size=11,
+                    bgcolor=AppColors.PRIMARY_DARK,
 
-                        weight=ft.FontWeight.BOLD,
+                    border_radius=10,
 
-                        color=AppColors.WHITE70
-                    ),
+                    padding=12,
 
-                    *controls
-                ]
-            )
+                    ink=True,
+
+                    on_click=on_toggle,
+
+                    content=ft.Row(
+
+                        alignment=(
+                            ft.MainAxisAlignment
+                            .SPACE_BETWEEN
+                        ),
+
+                        controls=[
+
+                            ft.Text(
+
+                                title,
+
+                                size=13,
+
+                                weight=(
+                                    ft.FontWeight.BOLD
+                                ),
+
+                                color=AppColors.WHITE
+                            ),
+
+                            ft.Icon(
+
+                                (
+                                    ft.icons.KEYBOARD_ARROW_DOWN
+                                    if opened
+                                    else ft.icons.KEYBOARD_ARROW_RIGHT
+                                ),
+
+                                size=18,
+
+                                color=AppColors.WHITE70
+                            )
+                        ]
+                    )
+                ),
+
+                # =================================================
+                # ITEMS
+                # =================================================
+
+                ft.Column(
+
+                    visible=opened,
+
+                    spacing=5,
+
+                    controls=controls
+                )
+            ]
         )

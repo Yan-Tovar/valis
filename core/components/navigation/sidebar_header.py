@@ -7,16 +7,13 @@ from core.theme.colors import (
 
 class SidebarHeader(ft.Container):
 
-
     def __init__(self):
 
         super().__init__()
 
-        self.padding = ft.padding.only(
-            bottom=30
-        )
-
         self.content = ft.Column(
+
+            spacing=2,
 
             horizontal_alignment=(
                 ft.CrossAxisAlignment.CENTER
@@ -28,7 +25,7 @@ class SidebarHeader(ft.Container):
 
                     "VALIS",
 
-                    size=28,
+                    size=24,
 
                     weight=ft.FontWeight.BOLD,
 
@@ -39,7 +36,7 @@ class SidebarHeader(ft.Container):
 
                     "Sistema de Gestión",
 
-                    size=12,
+                    size=11,
 
                     color=AppColors.WHITE70
                 )

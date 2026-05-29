@@ -60,7 +60,7 @@ MENU_REGISTRY = [
     },
 
     {
-        "section": "General",
+        "section": "Consulta",
 
         "label": "Consulta",
 

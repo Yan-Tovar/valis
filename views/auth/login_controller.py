@@ -1,4 +1,7 @@
-from auth.session_manager import SessionManager
+from auth.session_manager import (
+    SessionManager
+)
+
 from core.router.navigation_service import (
     NavigationService
 )
@@ -25,6 +28,9 @@ from auth.auth_exceptions import (
 
 class LoginController:
 
+    # =================================================
+    # INIT
+    # =================================================
 
     def __init__(
         self,
@@ -37,10 +43,9 @@ class LoginController:
             AuthService()
         )
 
-
-    # -------------------------------------------------
+    # =================================================
     # LOGIN
-    # -------------------------------------------------
+    # =================================================
 
     def login(
 
@@ -53,9 +58,9 @@ class LoginController:
 
         try:
 
-            # -----------------------------------------
+            # =========================================
             # LOGIN
-            # -----------------------------------------
+            # =========================================
 
             self.auth_service.login(
 
@@ -64,9 +69,19 @@ class LoginController:
                 password=password
             )
 
-            # -----------------------------------------
+            # =========================================
+            # CURRENT USER
+            # =========================================
+
+            user = SessionManager.current_user()
+
+            user_role = (
+                user["rol"]
+            )
+
+            # =========================================
             # SUCCESS
-            # -----------------------------------------
+            # =========================================
 
             Snackbar.show(
 
@@ -77,13 +92,25 @@ class LoginController:
                 success=True
             )
 
-            NavigationService.navigate(
-                Routes.DASHBOARD
-            )
+            # =========================================
+            # REDIRECT
+            # =========================================
 
-        # ---------------------------------------------
+            if user_role == "ADMIN":
+
+                NavigationService.navigate(
+                    Routes.DASHBOARD
+                )
+
+            else:
+
+                NavigationService.navigate(
+                    Routes.CONSULTA
+                )
+
+        # =============================================
         # INVALID CREDENTIALS
-        # ---------------------------------------------
+        # =============================================
 
         except InvalidCredentials as e:
 
@@ -96,9 +123,9 @@ class LoginController:
                 success=False
             )
 
-        # ---------------------------------------------
+        # =============================================
         # INACTIVE USER
-        # ---------------------------------------------
+        # =============================================
 
         except InactiveUser as e:
 
@@ -111,9 +138,9 @@ class LoginController:
                 success=False
             )
 
-        # ---------------------------------------------
+        # =============================================
         # UNKNOWN ERROR
-        # ---------------------------------------------
+        # =============================================
 
         except Exception as e:
 
