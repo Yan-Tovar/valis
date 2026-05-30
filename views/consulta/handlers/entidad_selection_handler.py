@@ -37,12 +37,13 @@ class EntidadSelectionHandler:
 
         self.ui["chat"].controls.append(
             build_ai(
-                f"La entidad {entidad['nombre']} tiene contratos disponibles. Ahora selecciona el estudio."
+                f"La entidad {entidad['nombre']} tiene un contrato disponible. Ahora selecciona el estudio."
             )
         )
 
         self.ui["entidad_input"].visible = False
         self.ui["results_container"].controls = []
+        self.page.update()
 
         self.ui["estudio_input"].visible = True
         self.ui["estudio_input"].focus()

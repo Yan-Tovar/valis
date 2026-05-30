@@ -5,26 +5,31 @@ from core.theme.colors import AppColors
 
 def build(message, controls=None):
 
-    controls = controls or []
+    # =====================================================
+    # NORMALIZAR CONTROLS
+    # =====================================================
+
+    normalized_controls = []
+
+    if controls:
+
+        # Si ya viene lista
+        if isinstance(controls, list):
+
+            normalized_controls.extend(controls)
+
+        # Si viene un control único
+        else:
+
+            normalized_controls.append(controls)
+
+    # =====================================================
+    # BUBBLE
+    # =====================================================
 
     bubble = ft.Container(
 
-        content=ft.Column(
-
-            controls=[
-
-                ft.Text(
-                    message,
-                    size=13,
-                    color=AppColors.TEXT_PRIMARY
-                ),
-
-                *controls
-            ],
-
-            spacing=10,
-            tight=True
-        ),
+        expand=True,
 
         padding=15,
 
@@ -37,8 +42,28 @@ def build(message, controls=None):
             AppColors.BORDER
         ),
 
-        expand=True
+        content=ft.Column(
+
+            spacing=10,
+
+            tight=True,
+
+            controls=[
+
+                ft.Text(
+                    message,
+                    size=13,
+                    color=AppColors.TEXT_PRIMARY
+                ),
+
+                *normalized_controls
+            ]
+        )
     )
+
+    # =====================================================
+    # ROW
+    # =====================================================
 
     return ft.Row(
 
@@ -50,15 +75,13 @@ def build(message, controls=None):
 
             ft.Container(
 
+                margin=ft.margin.only(top=5),
+
                 content=ft.Image(
                     src="assets/parrot.png",
                     width=42,
                     height=42,
                     fit=ft.ImageFit.CONTAIN
-                ),
-
-                margin=ft.margin.only(
-                    top=5
                 )
             ),
 

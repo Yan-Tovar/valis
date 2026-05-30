@@ -6,6 +6,10 @@ from .state.consulta_state import (
     ConsultaState
 )
 
+from auth.session_manager import (
+    SessionManager
+)
+
 from .components.chat_bubble_ai import (
     build as build_ai
 )
@@ -55,10 +59,13 @@ class ConsultaView:
         # CHAT
         # =====================================================
 
-        self.chat = ft.Column(
+        self.chat = ft.ListView(
+
+            expand=True,
+
             spacing=15,
-            scroll=ft.ScrollMode.AUTO,
-            expand=True
+
+            auto_scroll=True
         )
 
         # =====================================================
@@ -111,7 +118,9 @@ class ConsultaView:
 
             "on_finish": self._restart_flow,
 
-            "on_open_detail": self._open_detail
+            "on_open_detail": self._open_detail,
+
+            "add_message": self._add_chat_message
         }
 
         # =====================================================
@@ -174,13 +183,54 @@ class ConsultaView:
 
     def _start_chat(self):
 
+        # =================================================
+        # CLEAR CHAT
+        # =================================================
+
         self.chat.controls.clear()
+
+        # =================================================
+        # CURRENT USER
+        # =================================================
+
+        user = SessionManager.current_user()
+
+        nombre = "Usuario"
+
+        if user:
+
+            nombre = user.get(
+                "nombre_completo",
+                "Usuario"
+            )
+
+        # =================================================
+        # WELCOME MESSAGE
+        # =================================================
 
         self.chat.controls.append(
 
             build_ai(
-                "Hola, ¿qué entidad quieres consultar hoy?"
+                f"Hola, {nombre}. ¿Qué entidad quieres consultar hoy?"
             )
+        )
+
+    # =====================================================
+    # ADD MESSAGE
+    # =====================================================
+
+    def _add_chat_message(
+        self,
+        control
+    ):
+
+        self.chat.controls.append(control)
+
+        self.page.update()
+
+        self.chat.scroll_to(
+            offset=-1,
+            duration=300
         )
 
     # =====================================================
@@ -213,27 +263,26 @@ class ConsultaView:
 
     def _open_detail(self, payload):
 
-        controls = []
-
-        for k, v in payload.items():
-
-            controls.append(
-                ft.Text(f"{k}: {v}")
-            )
-
         show_detail_modal(
             self.page,
-            "Detalle",
-            controls
+            "Detalle completo",
+            payload
         )
-
     # =====================================================
     # RESTART
     # =====================================================
 
     def _restart_flow(self, e):
 
+        # =================================================
+        # RESET STATE
+        # =================================================
+
         self.state.reset()
+
+        # =================================================
+        # RESET INPUTS
+        # =================================================
 
         self.entidad_input.visible = True
         self.estudio_input.visible = False
@@ -241,13 +290,31 @@ class ConsultaView:
         self.entidad_input.value = ""
         self.estudio_input.value = ""
 
+        # =================================================
+        # RESET RESULTS
+        # =================================================
+
         self.results_container.controls.clear()
+
+        # =================================================
+        # RESET CHAT
+        # =================================================
+
+        self.chat.controls.clear()
+
+        # =================================================
+        # START AGAIN
+        # =================================================
 
         self._start_chat()
 
-        self.entidad_input.focus()
-
         self.page.update()
+
+        # =================================================
+        # FOCUS
+        # =================================================
+
+        self.entidad_input.focus()
 
     # =====================================================
     # BUILD
@@ -265,12 +332,17 @@ class ConsultaView:
 
                 expand=True,
 
+                spacing=15,
+
                 controls=[
 
+                    # CHAT
                     self.chat,
 
+                    # RESULTS
                     self.results_container,
 
+                    # INPUTS
                     self.entidad_input,
 
                     self.estudio_input

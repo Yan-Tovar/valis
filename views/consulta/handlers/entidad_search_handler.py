@@ -46,6 +46,26 @@ class EntidadSearchHandler:
 
         self.state.entidad_results = response.data
 
+        self.state.entidad_selected_index = 0
+
+        # =========================================
+        # AUTOSELECT SINGLE RESULT
+        # =========================================
+
+        if len(response.data) == 1:
+
+            entidad = response.data[0]
+
+            self.ui["entidad_input"].value = (
+                entidad["nombre"]
+            )
+
+            self.page.update()
+
+            self.ui["on_entidad_select"](0)
+
+            return
+
         self.ui["results_container"].controls = [
 
             build_results(

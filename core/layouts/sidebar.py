@@ -276,7 +276,6 @@ class Sidebar(ft.Container):
                 user_role == "LECTOR"
                 and item["section"] != "Consulta"
             ):
-                print(item["section"], item["roles"])
                 continue
             
             section = item["section"]

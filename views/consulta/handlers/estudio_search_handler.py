@@ -42,6 +42,26 @@ class EstudioSearchHandler:
 
         self.state.estudio_results = response.data
 
+        self.state.estudio_selected_index = 0
+
+        # =========================================
+        # AUTOSELECT SINGLE RESULT
+        # =========================================
+
+        if len(response.data) == 1:
+
+            estudio = response.data[0]
+
+            self.ui["estudio_input"].value = (
+                estudio["nombre"]
+            )
+
+            self.page.update()
+
+            self.ui["on_estudio_select"](0)
+
+            return
+
         self.ui["results_container"].controls = [
 
             build_results(

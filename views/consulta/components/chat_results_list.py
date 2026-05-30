@@ -100,9 +100,15 @@ def build(
 
     return ft.Container(
 
+        height=220,
+
         content=ft.Column(
+
             controls=controls,
-            spacing=0
+
+            spacing=0,
+
+            scroll=ft.ScrollMode.AUTO
         ),
 
         border_radius=15,

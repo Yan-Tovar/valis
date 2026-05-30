@@ -30,22 +30,44 @@ class ResultadoHandler:
 
         response = self.controller.get_flujo_completo(
 
-            self.state.estudio_id,
-            self.state.entidad_id
+            self.state.entidad_id,
+            self.state.estudio_id
         )
+
+        # =====================================================
+        # ERROR
+        # =====================================================
 
         if not response.success:
 
-            self.ui["chat"].controls.append(
+            self.ui["add_message"](
 
                 build_ai(
                     response.message
                 )
             )
 
+            # =============================================
+            # MOSTRAR BOTON TAMBIEN EN ERROR
+            # =============================================
+
+            self.ui["add_message"](
+
+                build_action_button(
+                    "Reiniciar consulta",
+                    self.ui["on_finish"]
+                )
+            )
+
+            self.state.current_step = "resultado"
+
             self.page.update()
 
             return
+
+        # =====================================================
+        # SUCCESS
+        # =====================================================
 
         self.state.resultado_completo = response.data
 
@@ -56,15 +78,15 @@ class ResultadoHandler:
             self.ui["on_open_detail"]
         )
 
-        self.ui["chat"].controls.append(
+        self.ui["add_message"](
 
             build_ai(
                 "Consulta completada correctamente.",
-                [resultado_controls]
+                resultado_controls
             )
         )
 
-        self.ui["chat"].controls.append(
+        self.ui["add_message"](
 
             build_action_button(
                 "Finalizar proceso",
